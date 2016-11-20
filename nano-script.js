@@ -33,29 +33,35 @@ Nano = {
     function str2arr(s) {
       return s.split("").reduce(function(a,b) {a[b]=1; return a;}, {})
     }
-    var syms = str2arr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$")
-    var ops = str2arr("+-*/=><&|:.!?")
+    var syms = str2arr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
+    var ops = str2arr("+-*/=><&|:!?")
     var brs = str2arr("[](){}")
     var des = str2arr("\n;")
     var qus = str2arr("\"'")
     tokens = [];
     var s;
     exp = null;
+    var quo = null;
     for(var i=0;i<str.length+1;i++) {
       c = str[i]
       t = syms[c] ? "s" : ops[c] ? "o" : brs[c] ? c : null;
       if(exp != null) {
-        if(exp == t) {
+        if(exp == t || quo && quo != c) {
           s += c;
+          continue
         } else {
-          tokens.push(s)
-          if(qus[exp]) {
-            tokens << exp
+          if(quo) {
+            s += quo
+            c = null
           }
+          tokens.push(s)
           exp = null;
+          quo = null;
           s = ""
+          if(!c) {
+            continue
+          }
         }
-        continue;
       }
 
       if(t == ' ') {
@@ -65,9 +71,8 @@ Nano = {
         if(des[c]) {
             tokens.push(";")
         } else if(qus[c]) {
-            tokens.push(c)
-            exp = c;
-            s = ""
+            quo = exp = c;
+            s = c
         }
       } else {
         s = c
@@ -78,5 +83,5 @@ Nano = {
   }
 }
 
-ts = Nano.tokenize("abc = 123")
+ts = Nano.tokenize("abc.name=123.05 + 'abc' + \"def\"; numbers[x]=10")
 console.log(ts)
