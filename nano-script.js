@@ -28,16 +28,17 @@
  * Date: 11/18/2016
  */
 
+function str2set(s) {
+   return s.split("").reduce(function(a,b) {a[b]=1; return a;}, {})
+}
+
 Nano = {
   "tokenize": function(str) {
-    function str2arr(s) {
-      return s.split("").reduce(function(a,b) {a[b]=1; return a;}, {})
-    }
-    var syms = str2arr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
-    var ops = str2arr("+-*/=><&|:!?")
-    var brs = str2arr("[](){}")
-    var des = str2arr("\n;")
-    var qus = str2arr("\"'")
+    var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
+    var ops = str2set("+-*/=><&|:!?")
+    var brs = str2set("[](){}")
+    var des = str2set("\n;")
+    var qus = str2set("\"'")
     tokens = [];
     var s;
     exp = null;
@@ -83,5 +84,116 @@ Nano = {
   }
 }
 
-ts = Nano.tokenize("abc.name=123.05 + 'abc' + \"def\"; numbers[x]=10")
+ts = Nano.tokenize("abc.name=123.05 + 'abc' + \"def\"; numbers[x].value=10; x = [1,m[0]]")
 console.log(ts)
+
+// exp: s
+// exp: s o exp
+// exp: s[exp]
+// exp: s(exp,exp,exp...)
+// exp: o exp
+// exp: (exp)
+function expression(tokens) {
+  var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
+  var ops = str2set("+-*/=><&|:!?")
+  var brs = str2set("[](){}")
+  var qus = str2set("\"'")
+
+    var to = tokens[0]
+    var c = to[0]
+    if(syms[c]) {
+      var to2 = tokens[1]
+      if(!tokens) {
+        return ["s", to]
+      }
+      var c2 = to2[0]
+      if(ops[c2]) {
+        tokens.shift()
+        var operator = tokens.shift()
+        var exp = expression(tokens)
+        return [operator, to, exp]
+      } else if(c2 == "["){
+        tokens.shift()
+        tokens.shift()
+        var exp = expression(tokens)
+        if("]" != tokens.shift()) {
+          throw "brackets are not balanced"
+        }
+        return ["[]", to, exp]
+      } else if(c2 == "(") {
+        // function
+        tokens.shift()
+        tokens.shift()
+        var args = []
+        do {
+          args.push(expression(tokens))
+          var t = tokens.shift()
+        } while(t == ",");
+        if(t != ")") {
+          throw "parenthesis for function is not closed"
+        }
+        return ["f", to, args]
+      }
+    } else if(ops[c]){
+      // operator
+      tokens.shift()
+      var exp = expression(tokens)
+      return [to, exp]
+    } else if(c == "(") {
+      tokens.shift()
+      var exp = expression(tokens)
+      if(")" != tokens.shift()) {
+        throw "parenthesis are not balanced"
+      }
+    } else {
+      throw "illegal start of expression: " + to
+    }
+  }
+}
+
+// statement: exp ? exp : exp
+// statement: exp.s
+// statement: exp
+function statement(tokens) {
+  var exp = expression(tokens)
+  if(tokens.length == 0) {
+    return
+  }
+  var to = tokens[0]
+  if(to == "?") {
+    tokens.shift()
+    var exp2 = expression(tokens)
+    var t = tokens.shift()
+    if(":" != t) {
+      throw "illegal ternary statement: " + t
+    }
+    var exp3 = expression(tokens)
+    return ["?", exp, exp2, exp3]
+  } else if(to == '.') {
+    tokens.shift()
+    var t = tokens.shift()
+    var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
+    if(!syms[t]) {
+      throw "illegal property: " + t
+    }
+    return [".", exp, t]
+  } else if(to == ";") {
+    tokens.shift()
+    return exp
+  } else {
+    throw "illegal for the remaining of the statement: " + to
+  }
+
+}
+
+
+// f(a,b)=>{ a=a+b; b+1 }
+function funcCall(tokens) {
+  var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
+  var to = tokens[0]
+  var c = to[0]
+  if(!syms[c]) {
+    throw "illegal start of a function: " + to
+  }
+
+}
