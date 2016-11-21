@@ -32,20 +32,21 @@ function str2set(s) {
    return s.split("").reduce(function(a,b) {a[b]=1; return a;}, {})
 }
 
+var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
+var ops = str2set("+-*/=><&|:!?")
+var brs = str2set("[](){},")
+var des = str2set("\n;")
+var qus = str2set("\"'")
+
 Nano = {
   "tokenize": function(str) {
-    var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
-    var ops = str2set("+-*/=><&|:!?")
-    var brs = str2set("[](){}")
-    var des = str2set("\n;")
-    var qus = str2set("\"'")
     tokens = [];
     var s;
     exp = null;
     var quo = null;
     for(var i=0;i<str.length+1;i++) {
       c = str[i]
-      t = syms[c] ? "s" : ops[c] ? "o" : brs[c] ? c : null;
+      t = syms[c] ? "s" : ops[c] ? "o" : null;
       if(exp != null) {
         if(exp == t || quo && quo != c) {
           s += c;
@@ -69,7 +70,9 @@ Nano = {
         continue;
       }
       if(!t) {
-        if(des[c]) {
+        if(brs[c]) {
+            tokens.push(c)
+        } else if(des[c]) {
             tokens.push(";")
         } else if(qus[c]) {
             quo = exp = c;
@@ -84,9 +87,7 @@ Nano = {
   }
 }
 
-ts = Nano.tokenize("abc.name=123.05 + 'abc' + \"def\"; numbers[x].value=10; x = [1,m[0]]")
-console.log(ts)
-
+/*
 // exp: s
 // exp: s o exp
 // exp: s[exp]
@@ -94,11 +95,6 @@ console.log(ts)
 // exp: o exp
 // exp: (exp)
 function expression(tokens) {
-  var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
-  var ops = str2set("+-*/=><&|:!?")
-  var brs = str2set("[](){}")
-  var qus = str2set("\"'")
-
     var to = tokens[0]
     var c = to[0]
     if(syms[c]) {
@@ -183,9 +179,7 @@ function statement(tokens) {
   } else {
     throw "illegal for the remaining of the statement: " + to
   }
-
 }
-
 
 // f(a,b)=>{ a=a+b; b+1 }
 function funcCall(tokens) {
@@ -197,3 +191,4 @@ function funcCall(tokens) {
   }
 
 }
+*/

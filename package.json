@@ -1,0 +1,30 @@
+{
+  "name": "nano",
+  "version": "1.0.0",
+  "description": "nano script parser / interpreter",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuhanz/nano-script.git"
+  },
+  "keywords": [
+    "language",
+    "parser",
+    "/",
+    "interpreter"
+  ],
+  "author": "Yuhan Zhang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yuhanz/nano-script/issues"
+  },
+  "homepage": "https://github.com/yuhanz/nano-script",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-mocha-test": "^0.13.2",
+    "mocha": "^3.1.2"
+  }
+}
