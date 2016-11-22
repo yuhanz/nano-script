@@ -23,6 +23,21 @@ describe('Nano.tokenize', function() {
       assert.deepEqual(ts, ["x", "=", "[", "1", ",", "m", "[","0", "]", "]" ]);
 
       ts = Nano.tokenize("abc.name=123.05 + 'abc' + \"def\"; numbers[x].value=10; x = [1,m[0]]")
-      //assert.equal(ts, []);
+      assert.deepEqual(ts, ["abc.name", "=", "123.05", "+", "'abc'", "+", "\"def\"", ";",
+                        "numbers", "[", "x", "]", ".value", "=", "10", ";",
+                        "x", "=", "[", "1", ",", "m", "[","0", "]", "]"]);
+    });
+});
+
+describe('Nano.expression', function() {
+    it('should parse expressions', function() {
+      exp = expression(["10"])
+      assert.deepEqual(exp, "10")
+      exp = expression(["a", "=", "10"])
+      assert.deepEqual(exp, ["=", "a", "10"])
+      exp = expression(["a", "[", "3", "]"])
+      assert.deepEqual(exp, ["[]", "a", "3"])
+      // exp = expression(["a", "[", "3", "]", "=", "10"])
+      // assert.deepEqual(exp, ["=", ["[]", "a", "3"], "10"])
     });
 });

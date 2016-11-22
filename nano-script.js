@@ -87,7 +87,6 @@ Nano = {
   }
 }
 
-/*
 // exp: s
 // exp: s o exp
 // exp: s[exp]
@@ -98,18 +97,18 @@ function expression(tokens) {
     var to = tokens[0]
     var c = to[0]
     if(syms[c]) {
-      var to2 = tokens[1]
-      if(!tokens) {
-        return ["s", to]
+      tokens.shift()
+      var to2 = tokens[0]
+      if(!to2 || str2set("];")[to2[0]]) {
+        return to
       }
       var c2 = to2[0]
       if(ops[c2]) {
-        tokens.shift()
         var operator = tokens.shift()
         var exp = expression(tokens)
+
         return [operator, to, exp]
-      } else if(c2 == "["){
-        tokens.shift()
+      } else if(c2 == "[") {
         tokens.shift()
         var exp = expression(tokens)
         if("]" != tokens.shift()) {
@@ -117,9 +116,8 @@ function expression(tokens) {
         }
         return ["[]", to, exp]
       } else if(c2 == "(") {
+        tokens.shift()
         // function
-        tokens.shift()
-        tokens.shift()
         var args = []
         do {
           args.push(expression(tokens))
@@ -130,7 +128,7 @@ function expression(tokens) {
         }
         return ["f", to, args]
       }
-    } else if(ops[c]){
+    } else if(ops[c]) {
       // operator
       tokens.shift()
       var exp = expression(tokens)
@@ -141,12 +139,14 @@ function expression(tokens) {
       if(")" != tokens.shift()) {
         throw "parenthesis are not balanced"
       }
+      return exp
     } else {
       throw "illegal start of expression: " + to
     }
-  }
 }
 
+
+/*
 // statement: exp ? exp : exp
 // statement: exp.s
 // statement: exp
