@@ -37,7 +37,10 @@ describe('Nano.expression', function() {
       assert.deepEqual(exp, ["=", "a", "10"])
       exp = expression(["a", "[", "3", "]"])
       assert.deepEqual(exp, ["[]", "a", "3"])
-      // exp = expression(["a", "[", "3", "]", "=", "10"])
-      // assert.deepEqual(exp, ["=", ["[]", "a", "3"], "10"])
+      exp = expression(["a", "[", "3", "]", "=", "10"])
+      assert.deepEqual(exp, ["=", ["[]", "a", "3"], "10"])
+
+      exp = expression(["a", "=", "b", "+", "10", "-", "x"])
+      assert.deepEqual(exp, [ '=', 'a', [ '+', 'b', [ '-', '10', 'x' ]]])
     });
 });

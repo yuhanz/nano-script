@@ -90,6 +90,7 @@ Nano = {
 // exp: s
 // exp: s o exp
 // exp: s[exp]
+// exp: s[exp] o exp
 // exp: s(exp,exp,exp...)
 // exp: o exp
 // exp: (exp)
@@ -114,7 +115,14 @@ function expression(tokens) {
         if("]" != tokens.shift()) {
           throw "brackets are not balanced"
         }
-        return ["[]", to, exp]
+        exp = ["[]", to, exp]
+        if(!tokens.length) {
+          return exp
+        }
+        if(ops[tokens[0][0]]) {
+          operator = tokens.shift()
+          return [operator, exp, expression(tokens)]
+        }
       } else if(c2 == "(") {
         tokens.shift()
         // function
