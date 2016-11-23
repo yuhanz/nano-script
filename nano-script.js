@@ -38,6 +38,13 @@ var brs = str2set("[](){},")
 var des = str2set("\n;")
 var qus = str2set("\"'")
 
+var precedents = [
+  "&&", "||",
+  ">=", "<=", ">", "<", "==",
+  "+", "-",
+  "*", "/"]
+
+
 Nano = {
   "tokenize": function(str) {
     tokens = [];
@@ -88,12 +95,13 @@ Nano = {
 }
 
 // exp: s
-// exp: s o exp
 // exp: s[exp]
-// exp: s[exp] o exp
 // exp: s(exp,exp,exp...)
 // exp: o exp
 // exp: (exp)
+// exp: exp o exp
+// exp: exp ? exp : exp
+// exp: exp .s
 function expression(tokens) {
     var to = tokens[0]
     var c = to[0]
@@ -107,7 +115,12 @@ function expression(tokens) {
       if(ops[c2]) {
         var operator = tokens.shift()
         var exp = expression(tokens)
-
+        if(Array.isArray(exp)) {
+          var noperator = exp[0]
+          if(precedents.indexOf(operator) > precedents.indexOf(noperator)) {
+            return [noperator, [operator, to, exp[1]], exp[2]]
+          }
+        }
         return [operator, to, exp]
       } else if(c2 == "[") {
         tokens.shift()
