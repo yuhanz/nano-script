@@ -42,7 +42,8 @@ var precedents = [
   "&&", "||",
   ">=", "<=", ">", "<", "==",
   "+", "-",
-  "*", "/"]
+  "*", "/",
+  "()"]
 
 
 Nano = {
@@ -152,7 +153,7 @@ function expression(tokens) {
         if(t != ")") {
           throw "parenthesis for function is not closed"
         }
-        return ["()", to, args]
+        return ["func", to, args]
       }
     } else if(ops[c]) {
       // operator
@@ -165,7 +166,7 @@ function expression(tokens) {
       if(")" != tokens.shift()) {
         throw "parenthesis are not balanced"
       }
-      return exp
+      return ["()", exp]
     } else {
       throw "illegal start of expression: " + to
     }

@@ -64,6 +64,30 @@ describe('Nano.expression', function() {
 
     it('should parse function', function() {
       exp = expression(["f", "(", "a", ",", "b", ")"])
+      assert.deepEqual(exp, ["func", "f", ["a", "b"]])
+    });
+
+    it('should parse ternary expression', function() {
+      exp = expression(["c", "?", "0", ":", "1"])
+      assert.deepEqual(exp, ["?", "c", [":", "0", "1"]])
+    });
+
+    it('should parse parenthese', function() {
+      exp = expression(["(", "10", ")"])
+      assert.deepEqual(exp, ["()", "10"])
+
+      exp = expression(["a", "*", "(", "10", "+", "b", ")"])
+      assert.deepEqual(exp, ["*", "a", ["()", ["+", "10", "b"]]])
+    });
+
+
+    it('should parse dot', function() {
+      exp = expression(["numbers", "[", "x", "]", ".value", "=", "10", ";"])
+      assert.deepEqual(exp, ["=", [".value", ["[]", "numbers"]], "10"]);
+    });
+
+    it('should parse function', function() {
+      exp = expression(["f", "(", "a", ",", "b", ")"])
       assert.deepEqual(exp, ["()", "f", ["a", "b"]])
     });
 
