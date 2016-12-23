@@ -94,6 +94,17 @@ Nano = {
   }
 }
 
+
+function chain(op, token, exp) {
+  if(Array.isArray(exp)) {
+    var nop = exp[0]
+    if(precedents.indexOf(op) > precedents.indexOf(nop)) {
+      return [nop, chain(op, token, exp[1]), exp[2]]
+    }
+  }
+  return [op, token, exp]
+}
+
 // exp: s
 // exp: s[exp]
 // exp: s(exp,exp,exp...)
@@ -108,20 +119,14 @@ function expression(tokens) {
     if(syms[c]) {
       tokens.shift()
       var to2 = tokens[0]
-      if(!to2 || str2set("];")[to2[0]]) {
+      if(!to2 || str2set("];,)")[to2[0]]) {
         return to
       }
       var c2 = to2[0]
       if(ops[c2]) {
         var operator = tokens.shift()
         var exp = expression(tokens)
-        if(Array.isArray(exp)) {
-          var noperator = exp[0]
-          if(precedents.indexOf(operator) > precedents.indexOf(noperator)) {
-            return [noperator, [operator, to, exp[1]], exp[2]]
-          }
-        }
-        return [operator, to, exp]
+        return chain(operator, to, exp)
       } else if(c2 == "[") {
         tokens.shift()
         var exp = expression(tokens)
@@ -147,7 +152,7 @@ function expression(tokens) {
         if(t != ")") {
           throw "parenthesis for function is not closed"
         }
-        return ["f", to, args]
+        return ["()", to, args]
       }
     } else if(ops[c]) {
       // operator

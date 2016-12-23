@@ -40,25 +40,41 @@ describe('Nano.expression', function() {
       exp = expression(["a", "[", "3", "]", "=", "10"])
       assert.deepEqual(exp, ["=", ["[]", "a", "3"], "10"])
 
-      // exp = expression(["(", "10", ")"])
-      // assert.deepEqual(exp, ["10"])
-
       exp = expression(["!", "a"])
       assert.deepEqual(exp, ["!", "a"])
 
       exp = expression(["!", "!", "a"])
       assert.deepEqual(exp, ["!", ["!", "a"]])
 
-      // exp = expression(["f", "(", "a", ",", "b", ")"])
-      // assert.deepEqual(exp, ["()", "f", "a", "b"])
-
-      // exp = expression(["c", "?", "0", ":", "1"])
-      // assert.deepEqual(exp, ["?", "c", "0", "1"])
-
       exp = expression(["a", "=", "b", "+", "10", "-", "x"])
       assert.deepEqual(exp, [ '=', 'a', [ '+', 'b', [ '-', '10', 'x' ]]])
+    });
 
+    it('should parse expressions with precedent', function() {
       exp = expression(["a", "=", "b", "*", "10", "-", "x"])
       assert.deepEqual(exp, [ '=', 'a', [ '-', ['*', 'b', '10'], 'x' ]])
+
+      exp = expression(["a", "=", "c", "+", "b", "*", "10", "-", "x"])
+      assert.deepEqual(exp, [ '=', 'a', ['+', 'c', [ '-', ['*', 'b', '10'], 'x' ]]])
+
+      exp = expression(["a", "=", "c", "+", "b", ">=", "10", "&&", "x"])
+      assert.deepEqual(exp, [ '=', 'a', ['&&', ['>=', ['+', 'c', 'b'], '10'], 'x' ]])
+
     });
+
+    it('should parse function', function() {
+      exp = expression(["f", "(", "a", ",", "b", ")"])
+      assert.deepEqual(exp, ["()", "f", ["a", "b"]])
+    });
+
+    it('should parse ternary expression', function() {
+      exp = expression(["c", "?", "0", ":", "1"])
+      assert.deepEqual(exp, ["?", "c", [":", "0", "1"]])
+    });
+
+    it('should parse parenthese', function() {
+      exp = expression(["(", "10", ")"])
+      assert.deepEqual(exp, "10")
+    });
+
 });
