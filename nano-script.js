@@ -173,49 +173,37 @@ function expression(tokens) {
 }
 
 
-/*
-// statement: exp ? exp : exp
-// statement: exp.s
-// statement: exp
-function statement(tokens) {
-  var exp = expression(tokens)
-  if(tokens.length == 0) {
-    return
-  }
-  var to = tokens[0]
-  if(to == "?") {
-    tokens.shift()
-    var exp2 = expression(tokens)
-    var t = tokens.shift()
-    if(":" != t) {
-      throw "illegal ternary statement: " + t
+function NanoContext() {
+  this.variables = [];
+
+  this.interpret = function(expression) {
+    if(typeof expression == 'string') {
+      v = expression;
+      if(v[0] == "'" || v[0] == '"') {  // string
+        return v.substring(1, v.length-1);
+      }
+      var v = parseFloat(expression)
+      if(!isNaN(v)) { // number
+        return v;
+      }
+      // variable
+      value = this.variables[v];
+      if(value == 'undefined') {
+        throw "undefined variable: " + v;
+      }
+      return value;
     }
-    var exp3 = expression(tokens)
-    return ["?", exp, exp2, exp3]
-  } else if(to == '.') {
-    tokens.shift()
-    var t = tokens.shift()
-    var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
-    if(!syms[t]) {
-      throw "illegal property: " + t
+
+    // array
+    var op = expression[0]
+    if(op == '=') {
+      var n = expression[1];
+      var v = this.interpret(expression[2]);
+      this.variables[n] = v;
+    } else if(op == '+' || op == '-') {
+
+    } else {
+      throw "unrecognized operator: " + op;
     }
-    return [".", exp, t]
-  } else if(to == ";") {
-    tokens.shift()
-    return exp
-  } else {
-    throw "illegal for the remaining of the statement: " + to
   }
 }
-
-// f(a,b)=>{ a=a+b; b+1 }
-function funcCall(tokens) {
-  var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
-  var to = tokens[0]
-  var c = to[0]
-  if(!syms[c]) {
-    throw "illegal start of a function: " + to
-  }
-
-}
-*/

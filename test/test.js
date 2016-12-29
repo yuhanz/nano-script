@@ -82,8 +82,14 @@ describe('Nano.expression', function() {
 
 
     // it('should parse dot', function() {
+    //   exp = expression(["a", ".value", "=", "10", ";"])
+    //   assert.deepEqual(exp, ["=", [".value", "a"], "10"]);
+    //
     //   exp = expression(["numbers", "[", "x", "]", ".value", "=", "10", ";"])
     //   assert.deepEqual(exp, ["=", [".value", ["[]", "numbers"]], "10"]);
+    //
+    //   exp = expression(["a", "=", "b", ".value"])
+    //   assert.deepEqual(exp, ["=", "a", [".value", "b"]]);
     // });
 
     it('should parse function', function() {
@@ -96,4 +102,16 @@ describe('Nano.expression', function() {
       assert.deepEqual(exp, ["?", "c", [":", "0", "1"]])
     });
 
+});
+
+describe('Nano.interpret', function() {
+    it('should interpret assignment', function() {
+      var context = new NanoContext();
+      context.interpret(["=", "a", "10"])
+      assert.deepEqual(context.variables['a'], 10)
+
+      context.interpret(["=", "s", "'abc'"])
+      assert.deepEqual(context.variables['s'], 'abc')
+
+    });
 });
