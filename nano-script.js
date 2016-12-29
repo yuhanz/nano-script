@@ -187,6 +187,7 @@ function NanoContext() {
         return v;
       }
       // variable
+      v = expression;
       value = this.variables[v];
       if(value == 'undefined') {
         throw "undefined variable: " + v;
@@ -200,10 +201,22 @@ function NanoContext() {
       var n = expression[1];
       var v = this.interpret(expression[2]);
       this.variables[n] = v;
-    } else if(op == '+' || op == '-') {
-
     } else {
-      throw "unrecognized operator: " + op;
+      var l = this.interpret(expression[1]);
+      var r = this.interpret(expression[2]);
+      return op == '+' ? l + r :
+             op == '-' ? l - r :
+             op == '*' ? l * r :
+             op == '/' ? l / r :
+             op == '>' ? l > r :
+             op == '<' ? l < r :
+             op == '==' ? l == r :
+             op == '!=' ? l != r :
+             op == '>=' ? l >= r :
+             op == '<=' ? l <= r :
+             op == '&&' ? l && r :
+             op == '||' ? l || r :
+             undefined;
     }
   }
 }

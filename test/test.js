@@ -113,5 +113,19 @@ describe('Nano.interpret', function() {
       context.interpret(["=", "s", "'abc'"])
       assert.deepEqual(context.variables['s'], 'abc')
 
+      context.interpret(["=", "s", "a"])
+      assert.deepEqual(context.variables['s'], 10)
+
+    });
+
+    it('should interpret operator', function() {
+      var context = new NanoContext();
+
+      var ops = ['+', '-', '*', '/', '>', '<', '>=', '<=', '==', '!='];
+      var expected = [11, 1, 30, 1.2, true, false, true, false, false, true]
+      for(var i=0;i<ops.length;i++) {
+        context.interpret([ '=', 'a', [ops[i], '6', '5']])
+        assert.deepEqual(context.variables['a'], expected[i])
+      }
     });
 });
