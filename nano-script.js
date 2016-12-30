@@ -186,8 +186,15 @@ function NanoContext() {
       if(!isNaN(v)) { // number
         return v;
       }
-      // variable
+
       v = expression;
+      if(v == 'true') {
+        return true;
+      } else if(v == 'false'){
+        return false;
+      }
+
+      // variable
       value = this.variables[v];
       if(value == 'undefined') {
         throw "undefined variable: " + v;
@@ -201,6 +208,9 @@ function NanoContext() {
       var n = expression[1];
       var v = this.interpret(expression[2]);
       this.variables[n] = v;
+    } else if(op == '!') {
+      var v = this.interpret(expression[1]);
+      return !v;
     } else {
       var l = this.interpret(expression[1]);
       var r = this.interpret(expression[2]);

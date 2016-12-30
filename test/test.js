@@ -128,4 +128,16 @@ describe('Nano.interpret', function() {
         assert.deepEqual(context.variables['a'], expected[i])
       }
     });
+
+    it('should interpret logical operators', function() {
+        var context = new NanoContext();
+        context.interpret([ '=', 'a', ['&&', 'true', ['!', 'false']]]);
+        assert.equal(context.variables['a'], true);
+
+        context.interpret([ '=', 'b', ['||', 'false', 'a']]);
+        assert.equal(context.variables['b'], true);
+
+        context.interpret([ '=', 'b', ['||', 'false', ['!', 'b']]]);
+        assert.equal(context.variables['b'], false);
+    });
 });
