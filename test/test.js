@@ -140,4 +140,16 @@ describe('Nano.interpret', function() {
         context.interpret([ '=', 'b', ['||', 'false', ['!', 'b']]]);
         assert.equal(context.variables['b'], false);
     });
+
+    it('should interpret ternary operator', function() {
+      var context = new NanoContext();
+      context.interpret(['=', 'c', 'true'])
+      context.interpret(['=', 'a', ["?", "c", [":", "0", "1"]]]);
+
+      assert.equal(context.variables['a'], 0)
+
+      context.interpret(['=', 'c', 'false'])
+      context.interpret(['=', 'a', ["?", "c", [":", "0", "1"]]]);
+      assert.equal(context.variables['a'], 1)
+    });
 });

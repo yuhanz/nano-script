@@ -212,6 +212,13 @@ function NanoContext() {
     } else if(op == '!') {
       var v = this.interpret(expression[1]);
       return !v;
+    } else if(op == '?') {
+      var cond = this.interpret(expression[1]);
+      var choice = expression[2];
+      if(!choice || ":" != choice[0]) {
+        throw "missing : in trenary oprator";
+      }
+      return this.interpret(choice[cond ? 1 : 2]);
     } else {
       var l = this.interpret(expression[1]);
       var r = this.interpret(expression[2]);
@@ -227,7 +234,7 @@ function NanoContext() {
              op == '<=' ? l <= r :
              op == '&&' ? l && r :
              op == '||' ? l || r :
-             undefined;
+             undefined
     }
   }
 }
