@@ -153,3 +153,15 @@ describe('Nano.interpret', function() {
       assert.equal(context.variables['a'], 1)
     });
 });
+
+
+describe('Nano.run', function() {
+    it('should run code', function() {
+      var context = new NanoContext()
+      code = "a = 1; b = 2; c = a + b * 3;";
+      context.run(code);
+      assert.equal(context.variables['a'], 1)
+      assert.equal(context.variables['b'], 2)
+      assert.equal(context.variables['c'], 7)
+    });
+});

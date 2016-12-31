@@ -237,4 +237,18 @@ function NanoContext() {
              undefined
     }
   }
+
+  this.run = function(text) {
+    ts = this.tokenize(text)
+    var start = 0;
+    for(var i=0;i<ts.length;i++) {
+      if(ts[i] == ';') {
+        var tokens = ts.slice(start, i);
+        var expression = this.expression(tokens);
+        this.interpret(expression);
+        start = i + 1;
+      }
+    }
+
+  }
 }
