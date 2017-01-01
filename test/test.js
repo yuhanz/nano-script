@@ -67,9 +67,17 @@ describe('Nano.expression', function() {
       assert.deepEqual(exp, ["func", "f", ["a", "b"]])
     });
 
+    it('should parse array initialization', function() {
+      exp = new NanoContext().expression(["[", "1", ",", "2", ",", "b", "]"])
+      assert.deepEqual(exp, ["{}", ["1", "2", "b"]])
+    });
+
     it('should parse ternary expression', function() {
       exp = new NanoContext().expression(["c", "?", "0", ":", "1"])
       assert.deepEqual(exp, ["?", "c", [":", "0", "1"]])
+
+      exp = new NanoContext().expression(["c", ">", "0", "&&", "b", ">=", "3", "?", "0", ":", "1", "+", "2"])
+      assert.deepEqual(exp, ["?", ["&&", [">", "c", "0"], [">=", "b", "3"]], [":", "0", ["+", "1", "2"]]])
     });
 
     it('should parse parenthese', function() {
@@ -165,6 +173,13 @@ describe('Nano.run', function() {
       assert.equal(context.variables['c'], 7)
     });
 
+    it('should initialize array', function() {
+      var context = new NanoContext()
+      code = "a = [1 , 3];";
+      context.run(code);
+      assert.deepEqual(context.variables['a'], [1,3]);
+    });
+
     it('should run code with precedent', function() {
       var context = new NanoContext()
       code = "a = 1; b = 2;c = 10 * 5 + a + b * 3 * (a + (6/b - 4)*1);";
@@ -176,12 +191,20 @@ describe('Nano.run', function() {
 
     it('should run code with ternary operation', function() {
       var context = new NanoContext()
-      code = "a = 1; b = 2;c = a > 0 && b > 0 ? 'cool' : 'unexpected';";
+      code = "a = 1; b = 2;c = a > 0 && b > 0 ? 1 + 5 : 3;";
       context.run(code);
       assert.equal(context.variables['a'], 1)
       assert.equal(context.variables['b'], 2)
-      assert.equal(context.variables['c'], 'cool')
+      assert.equal(context.variables['c'], 6)
     });
 
+    it('should run code with string', function() {
+      var context = new NanoContext()
+      code = "a = 'hello'; b = 2; c = a + ' ' + b";
+      context.run(code);
+      assert.equal(context.variables['a'], 'hello')
+      assert.equal(context.variables['b'], 2)
+      assert.equal(context.variables['c'], 'hello 2')
 
+    });
 });

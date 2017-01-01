@@ -169,6 +169,18 @@ function NanoContext() {
           throw "parenthesis are not balanced"
         }
         return ["()", exp]
+      } else if(c == "[") {
+        tokens.shift()
+        // array
+        var args = [];
+        do {
+          args.push(expression(tokens))
+          var t = tokens.shift()
+        } while(t == ",");
+        if(t != "]") {
+          throw "square brackets for array is not closed"
+        }
+        return ["{}", args]
       } else {
         throw "illegal start of expression: " + to
       }
@@ -221,6 +233,12 @@ function NanoContext() {
       return this.interpret(choice[cond ? 1 : 2]);
     } else if(op == '()') {
       return this.interpret(expression[1]);
+    } else if(op == '{}') {
+      arr = expression[1]
+      for(var i=0;i<arr.length;i++) {
+        arr[i] = this.interpret(arr[i]);
+      }
+      return arr
     } else {
       var l = this.interpret(expression[1]);
       var r = this.interpret(expression[2]);
