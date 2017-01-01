@@ -164,4 +164,24 @@ describe('Nano.run', function() {
       assert.equal(context.variables['b'], 2)
       assert.equal(context.variables['c'], 7)
     });
+
+    it('should run code with precedent', function() {
+      var context = new NanoContext()
+      code = "a = 1; b = 2;c = 10 * 5 + a + b * 3 * (a + (6/b - 4)*1);";
+      context.run(code);
+      assert.equal(context.variables['a'], 1)
+      assert.equal(context.variables['b'], 2)
+      assert.equal(context.variables['c'], 51)
+    });
+
+    it('should run code with ternary operation', function() {
+      var context = new NanoContext()
+      code = "a = 1; b = 2;c = a > 0 && b > 0 ? 'cool' : 'unexpected';";
+      context.run(code);
+      assert.equal(context.variables['a'], 1)
+      assert.equal(context.variables['b'], 2)
+      assert.equal(context.variables['c'], 'cool')
+    });
+
+
 });

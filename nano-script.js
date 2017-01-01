@@ -219,6 +219,8 @@ function NanoContext() {
         throw "missing : in trenary oprator";
       }
       return this.interpret(choice[cond ? 1 : 2]);
+    } else if(op == '()') {
+      return this.interpret(expression[1]);
     } else {
       var l = this.interpret(expression[1]);
       var r = this.interpret(expression[2]);
