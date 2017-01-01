@@ -119,7 +119,7 @@ function NanoContext() {
   function expression(tokens) {
       var to = tokens[0]
       var c = to[0]
-      if(syms[c]) {
+      if(syms[c] || qus[c]) {
         tokens.shift()
         var to2 = tokens[0]
         if(!to2 || str2set("];,)")[to2[0]]) {

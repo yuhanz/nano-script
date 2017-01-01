@@ -48,6 +48,9 @@ describe('Nano.expression', function() {
 
       exp = new NanoContext().expression(["a", "=", "b", "+", "10", "-", "x"])
       assert.deepEqual(exp, [ '=', 'a', [ '+', 'b', [ '-', '10', 'x' ]]])
+
+      exp = new NanoContext().expression(["a", "=", '"hello"'])
+      assert.deepEqual(exp, ["=", "a", "\"hello\""])
     });
 
     it('should parse expressions with precedent', function() {
@@ -124,6 +127,8 @@ describe('Nano.interpret', function() {
       context.interpret(["=", "s", "a"])
       assert.deepEqual(context.variables['s'], 10)
 
+      context.interpret(["=", "s", "'hello'"])
+      assert.deepEqual(context.variables['s'], 'hello')
     });
 
     it('should interpret operator', function() {
