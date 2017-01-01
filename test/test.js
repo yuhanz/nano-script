@@ -158,7 +158,7 @@ describe('Nano.interpret', function() {
 describe('Nano.run', function() {
     it('should run code', function() {
       var context = new NanoContext()
-      code = "a = 1; b = 2; c = a + b * 3;";
+      code = "a = 1; b = 2;\nc = a + b * 3;";
       context.run(code);
       assert.equal(context.variables['a'], 1)
       assert.equal(context.variables['b'], 2)
