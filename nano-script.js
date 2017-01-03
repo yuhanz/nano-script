@@ -36,7 +36,7 @@ function NanoContext() {
   }
 
   var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
-  var ops = str2set("+-*/=><&|:!?")
+  var ops = str2set("+-*/%=><&|:!?~^")
   var brs = str2set("[](){},")
   var des = str2set("\n;")
   var qus = str2set("\"'")
@@ -165,8 +165,8 @@ function NanoContext() {
       } else if(c == "(") {
         tokens.shift()
         var exp = expression(tokens)
-        if(")" != tokens.shift()) {
-          throw "parenthesis are not balanced"
+        if(")" != (t = tokens.shift())) {
+          throw "parenthesis are not balanced: " + t
         }
         return ["()", exp]
       } else if(c == "[") {
@@ -246,6 +246,7 @@ function NanoContext() {
              op == '-' ? l - r :
              op == '*' ? l * r :
              op == '/' ? l / r :
+             op == '%' ? l % r :
              op == '>' ? l > r :
              op == '<' ? l < r :
              op == '==' ? l == r :
@@ -254,6 +255,11 @@ function NanoContext() {
              op == '<=' ? l <= r :
              op == '&&' ? l && r :
              op == '||' ? l || r :
+             op == '^' ? l ^ r :
+             op == '&' ? l & r :
+             op == '|' ? l | r :
+             op == '<<' ? l << r :
+             op == '>>' ? l >> r :
              undefined
     }
   }

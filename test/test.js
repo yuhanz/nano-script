@@ -63,6 +63,10 @@ describe('Nano.expression', function() {
       exp = new NanoContext().expression(["a", "=", "c", "+", "b", ">=", "10", "&&", "x"])
       assert.deepEqual(exp, [ '=', 'a', ['&&', ['>=', ['+', 'c', 'b'], '10'], 'x' ]])
 
+      exp = new NanoContext().expression(["(", "a", "+", "b", ")", "*", "2"])
+      console.log(exp)
+      assert.deepEqual(exp, [ '*',['()', ['+', 'a', 'b'], '2']])
+
     });
 
     it('should parse function', function() {
