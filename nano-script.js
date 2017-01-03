@@ -260,6 +260,9 @@ function NanoContext() {
 
   this.run = function(text) {
     ts = this.tokenize(text)
+    if(ts[ts.length-1] != ';') {
+      ts.push(";");
+    }
     var start = 0;
     for(var i=0;i<ts.length;i++) {
       if(ts[i] == ';') {
