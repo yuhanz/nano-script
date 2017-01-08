@@ -40,6 +40,7 @@ function NanoContext() {
   var brs = str2set("[](){},")
   var des = str2set("\n;")
   var qus = str2set("\"'")
+  var end = str2set("];,)")
 
   var precedents = [
     "&&", "||",
@@ -107,6 +108,18 @@ function NanoContext() {
     return [op, token, exp]
   }
 
+  function furtherOperation(exp, tokens) {
+    if(tokens.length == 0 || ';' == (to2 = tokens[0])) {
+      return exp
+    }
+    var c2 = to2[0]
+    if(ops[c2]) {
+      var operator = tokens.shift()
+      var exp2 = expression(tokens)
+      return chain(operator, exp, exp2)
+    }
+    throw "unexpected operation: " + to2
+  }
 
   // exp: s
   // exp: s[exp]
@@ -122,7 +135,7 @@ function NanoContext() {
       if(syms[c] || qus[c]) {
         tokens.shift()
         var to2 = tokens[0]
-        if(!to2 || str2set("];,)")[to2[0]]) {
+        if(!to2 || end[to2[0]]) {
           return to
         }
         var c2 = to2[0]
@@ -168,7 +181,7 @@ function NanoContext() {
         if(")" != (t = tokens.shift())) {
           throw "parenthesis are not balanced: " + t
         }
-        return ["()", exp]
+        return furtherOperation(["()", exp], tokens)
       } else if(c == "[") {
         tokens.shift()
         // array
