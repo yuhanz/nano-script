@@ -9,14 +9,11 @@
  *  a=[]
  *  a=[1,2,3]
  *  a=!b
- *  a<<b
- *  a[n]<<b
  *  a==b
  *  a>b
- *  a[b]
- *  a>>b
- *  a[n]>>b
- *  "My name is {a.name}"
+ *  a[b] = 10
+ *  x = a[b]
+ * TODO:
  *  arr.length
  *  f(a,b)=>{ a=a+b; b+1 }
  *  map(f,a)
