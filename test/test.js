@@ -26,6 +26,8 @@ describe('Nano.tokenize', function() {
       assert.deepEqual(ts, ["abc.name", "=", "123.05", "+", "'abc'", "+", "\"def\"", ";",
                         "numbers", "[", "x", "]", ".value", "=", "10", ";",
                         "x", "=", "[", "1", ",", "m", "[","0", "]", "]"]);
+      ts = new NanoContext().tokenize("b['x'] = 'nice'");
+      assert.deepEqual(ts, ["b","[","'x'","]","=","'nice'"]);
     });
 });
 
@@ -76,6 +78,16 @@ describe('Nano.expression', function() {
     it('should parse array initialization', function() {
       exp = new NanoContext().expression(["[", "1", ",", "2", ",", "b", "]"])
       assert.deepEqual(exp, ["{}", ["1", "2", "b"]])
+    });
+
+    it('should parse array assignment', function() {
+      exp = new NanoContext().expression(["a", "[", "1", "]", "=", "10"])
+      assert.deepEqual(exp, ["=", ["[]", "a", "1"], "10"])
+    });
+
+    it('should parse array assignment with string', function() {
+      exp = new NanoContext().expression(["b","[","'x'","]","=","'nice'"])
+      assert.deepEqual(exp, ["=", ["[]", "b", "'x'"], "'nice'"])
     });
 
     it('should parse ternary expression', function() {
@@ -201,8 +213,8 @@ describe('Nano.run', function() {
       code = "a = [1, 3, 3]; a[3] = 10;";
       context.run(code);
       assert.deepEqual(context.variables['a'], [1, 3, 3, 10]);
-      // code = "b = []; b['x'] = 'nice';";
-      // context.run(code);
+      code = "b = []; b['x'] = 'nice';";
+      context.run(code);
       // assert.deepEqual(context.variables['b'], {'x':'nice'});
     });
 
