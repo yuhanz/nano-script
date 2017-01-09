@@ -188,6 +188,14 @@ describe('Nano.run', function() {
       assert.deepEqual(context.variables['a'], [1,3]);
     });
 
+    it('should calculate with array', function() {
+      var context = new NanoContext()
+      code = "a = [1, 3, 3]; x = a[0] + a[2];";
+      context.run(code);
+      assert.deepEqual(context.variables['a'], [1, 3, 3]);
+      assert.deepEqual(context.variables['x'], 4);
+    });
+
     it('should run code with precedent', function() {
       var context = new NanoContext()
       code = "a = 1; b = 2;c = 10 * 5 + a + b * 3 * (a + (6/b - 4)*1);";

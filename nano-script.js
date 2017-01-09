@@ -193,7 +193,7 @@ function NanoContext() {
         if(t != "]") {
           throw "square brackets for array is not closed"
         }
-        return ["{}", args]
+        return furtherOperation(["{}", args], tokens)
       } else {
         throw "illegal start of expression: " + to
       }
@@ -246,6 +246,16 @@ function NanoContext() {
       return this.interpret(choice[cond ? 1 : 2]);
     } else if(op == '()') {
       return this.interpret(expression[1]);
+    } else if(op == '[]') {
+      var v = expression[1]
+      if('object' != typeof this.variables[v]) {
+        throw 'varible is not an array / object: ' + v
+      }
+      var index = this.interpret(expression[2])
+      if((x = this.variables[v][index]) == undefined) {
+        throw 'undefined index: ' + index + ' on variable: ' + v;
+      }
+      return x;
     } else if(op == '{}') {
       arr = expression[1]
       for(var i=0;i<arr.length;i++) {
