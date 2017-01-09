@@ -233,7 +233,24 @@ function NanoContext() {
     if(op == '=') {
       var n = expression[1];
       var v = this.interpret(expression[2]);
-      this.variables[n] = v;
+      if(typeof n == 'string') {
+        this.variables[n] = v;
+      } else {
+        if(n[0] != '[]') {
+          throw "invalid variable for assignment: " + n[0]
+        }
+        var name = n[1];
+        var index = this.interpret(n[2])
+        var t = this.variables[name]
+        if(!t) {
+          throw "undefined variable name: " + name
+        }
+        if(typeof t != 'object') {
+          throw "variable is not an array for array assignment: " + name
+        }
+        this.variables[name][index] = v;
+      }
+      return v;
     } else if(op == '!') {
       var v = this.interpret(expression[1]);
       return !v;
