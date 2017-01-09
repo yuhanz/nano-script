@@ -200,6 +200,14 @@ describe('Nano.run', function() {
       assert.deepEqual(context.variables['a'], [1,3]);
     });
 
+    it('should initialize empty array', function() {
+      var context = new NanoContext()
+      code = "a = [];";
+      context.run(code);
+      assert.deepEqual(context.variables['a'], []);
+    });
+
+
     it('should calculate with array value', function() {
       var context = new NanoContext()
       code = "a = [1, 3, 3]; x = a[0] + a[2];";
@@ -208,15 +216,20 @@ describe('Nano.run', function() {
       assert.deepEqual(context.variables['x'], 4);
     });
 
-    it('should assign value to array', function() {
+    it('should assign value to array by int key', function() {
       var context = new NanoContext()
       code = "a = [1, 3, 3]; a[3] = 10;";
       context.run(code);
       assert.deepEqual(context.variables['a'], [1, 3, 3, 10]);
+    });
+
+    it('should assign value to array by string key', function() {
+      var context = new NanoContext()
       code = "b = []; b['x'] = 'nice';";
       context.run(code);
-      // assert.deepEqual(context.variables['b'], {'x':'nice'});
+      assert.deepEqual(context.variables['b'], {'x':'nice'});
     });
+
 
     it('should run code with precedent', function() {
       var context = new NanoContext()

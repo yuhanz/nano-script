@@ -186,10 +186,14 @@ function NanoContext() {
         tokens.shift()
         // array
         var args = [];
-        do {
-          args.push(expression(tokens))
+        if(tokens[0] != ']') {
+          do {
+            args.push(expression(tokens))
+            var t = tokens.shift()
+          } while(t == ",");
+        } else {
           var t = tokens.shift()
-        } while(t == ",");
+        }
         if(t != "]") {
           throw "square brackets for array is not closed"
         }
