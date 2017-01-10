@@ -218,6 +218,8 @@ function NanoContext() {
         return true;
       } else if(v == 'false'){
         return false;
+      } else if(v == 'null') {
+        return null;
       }
 
       // variable
@@ -280,6 +282,16 @@ function NanoContext() {
         arr[i] = this.interpret(arr[i]);
       }
       return arr
+    } else if(op == 'func') {
+      if(this[name=expression[1]] == 'undefined') {
+        throw "undefined function: " + name
+      }
+      args = expression[2]
+      values = []
+      for(var i=0;i<args.length;i++) {
+        values.push(this.interpret(args[i]))
+      }
+      return this[name].apply(null, values)
     } else {
       var l = this.interpret(expression[1]);
       var r = this.interpret(expression[2]);
