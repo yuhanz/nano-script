@@ -1,6 +1,5 @@
 <html>
-<script src="http://code.jquery.com/jquery-2.0.3.min.js" ></script>
-<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+<script src="https://code.jquery.com/jquery-2.0.3.min.js" ></script>
 
 <body>
 <h1>Nano Script Console</h1>
@@ -9,33 +8,23 @@
 Enter nano script in the input line below.
 </pre>
 
-<script id='template' type='text/ractive'>
-    {{variables}}
-</script>
 
 <input id="input" style="width:100%"></input>
 </body>
 <script src="nano-script.js"></script>
-<script>
-    var ractive = new Ractive({
-      // The `el` option can be a node, an ID, or a CSS selector.
-      el: '#container',
-
-      // We could pass in a string, but for the sake of convenience
-      // we're passing the ID of the <script> tag above.
-      template: '#template',
-
-      // Here, we're passing in some initial data
-      data: { variables: {} }
-    });
-</script>
 
 <script>
     var context = new NanoContext();
-    $(document).ready(function() {
-        var code = $("#input").value
-        context.run(code)
-        ractive.set("variables", context.variables)
-    });
+
+    $("#input").keyup(function(e) {
+        if(e.which == 13) {
+            el = $("#input")
+            code = el.val()
+            $("#input").text("")
+
+            context.run(code)
+            $("#containter").text(JSON::stringify(context.variables))
+        }
+    })
 </script>
 </html>
