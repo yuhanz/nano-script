@@ -4,26 +4,29 @@
 <body>
 <h1>Nano Script Console</h1>
 
-<pre id="container">
+<pre id="output">
 Enter nano script in the input line below.
 </pre>
 
 
 <input id="input" style="width:100%"></input>
 </body>
-<script src="nano-script.js"></script>
+<script src="/nano-script.js"></script>
 
 <script>
     var context = new NanoContext();
+    var log = "";
 
     $("#input").keyup(function(e) {
         if(e.which == 13) {
             el = $("#input")
             code = el.val()
-            $("#input").text("")
+            $("#input").val("")
 
+            log += code + "\n"
             context.run(code)
-            $("#containter").text(JSON::stringify(context.variables))
+            log += JSON.stringify(context.variables) + "\n"
+            $("#output").text(log)
         }
     })
 </script>

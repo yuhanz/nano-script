@@ -26,7 +26,7 @@
  */
 
 function NanoContext() {
-  this.variables = [];
+  this.variables = {};
 
   function str2set(s) {
      return s.split("").reduce(function(a,b) {a[b]=1; return a;}, {})
