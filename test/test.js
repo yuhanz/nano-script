@@ -279,6 +279,24 @@ describe('Nano.run', function() {
       assert.equal(context.variables['c'], false)
     });
 
+    it('should pass value of object by referernce', function() {
+      var context = new NanoContext()
+      code = "a = []; b = a; a[0] = 2; c = []; c[0] = b";
+      context.run(code);
+      assert.deepEqual(context.variables['a'], [2])
+      assert.deepEqual(context.variables['b'], [2])
+      assert.deepEqual(context.variables['c'], [[2]])
+    });
+
+    // it('should handle 2D array', function() {
+    //   var context = new NanoContext()
+    //   code = "a = [1,2]; b = []; b[0] = a; c = b[0][0]";
+    //   context.run(code);
+    //   assert.deepEqual(context.variables['a'], [1,2])
+    //   assert.deepEqual(context.variables['b'], [[1,2]])
+    //   assert.deepEqual(context.variables['c'], 1)
+    // });
+
     it('should invoke javascript function', function() {
       var context = new NanoContext()
       context.sqrt = function(v) {
