@@ -118,17 +118,17 @@ describe('Nano.expression', function() {
     //   assert.deepEqual(exp, ["=", "a", [".value", "b"]]);
     // });
 
-    // it('should parse null', function() {
-    //   exp = new NanoContext().expression(["a", "=", "null"])
-    //   assert.deepEqual(exp, ["=", "a", null])
-    // });
-    //
-    // it('should parse true / false', function() {
-    //   exp = new NanoContext().expression(["a", "=", "true"])
-    //   assert.deepEqual(exp, ["=", "a", true])
-    //   exp = new NanoContext().expression(["a", "=", "false"])
-    //   assert.deepEqual(exp, ["=", "a", false])
-    // });
+    it('should parse null', function() {
+      exp = new NanoContext().expression(["a", "=", "null"])
+      assert.deepEqual(exp, ["=", "a", "null"])
+    });
+
+    it('should parse true / false', function() {
+      exp = new NanoContext().expression(["a", "=", "true"])
+      assert.deepEqual(exp, ["=", "a", "true"])
+      exp = new NanoContext().expression(["a", "=", "false"])
+      assert.deepEqual(exp, ["=", "a", "false"])
+    });
 
     it('should parse function', function() {
       exp = new NanoContext().expression(["f", "(", "a", ",", "b", ")"])
@@ -268,10 +268,18 @@ describe('Nano.run', function() {
       assert.equal(context.variables['a'], 'hello')
       assert.equal(context.variables['b'], 2)
       assert.equal(context.variables['c'], 'hello 2')
-
     });
 
-    it('should invoke function', function() {
+    it('should run code with boolean and null', function() {
+      var context = new NanoContext()
+      code = "a = null; b = true; c = false";
+      context.run(code);
+      assert.equal(context.variables['a'], null)
+      assert.equal(context.variables['b'], true)
+      assert.equal(context.variables['c'], false)
+    });
+
+    it('should invoke javascript function', function() {
       var context = new NanoContext()
       context.sqrt = function(v) {
         return Math.sqrt(v)
