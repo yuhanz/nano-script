@@ -140,6 +140,13 @@ describe('Nano.expression', function() {
       assert.deepEqual(exp, ["?", "c", [":", "0", "1"]])
     });
 
+    it('should parse function definition', function() {
+      exp =  new NanoContext().expression(["sum", "(", "a", ",", "b", ")", "=>", "{",
+      "a", "+", "b", ";",
+       "}"])
+      assert.deepEqual(exp, ["=>", "sum", ["a", "b"], [["+", "a", "b"]]])
+    });
+
 });
 
 describe('Nano.interpret', function() {

@@ -109,6 +109,27 @@ function NanoContext() {
     if(tokens.length == 0 || ';' == (to2 = tokens[0])) {
       return exp
     }
+    if(to2 == "=>") {
+      if(exp[0] != "func") {
+        throw "invalid symbol =>";
+      }
+      tokens.shift()
+      if(tokens.shift() != "{") {
+        throw "function definition not starting with {"
+      }
+      statements = []
+      while(tokens.length > 0 && tokens[0] != "}") {
+        statements.push(expression(tokens));
+        if(tokens[0] == ";") {
+          tokens.shift()
+        }
+      }
+      if(tokens.length == 0 || tokens.shift() != "}") {
+        throw "function definition is not closed properly"
+      }
+      return ["=>", exp[1], exp[2], statements]
+    }
+
     var c2 = to2[0]
     if(ops[c2]) {
       var operator = tokens.shift()
@@ -165,7 +186,7 @@ function NanoContext() {
           if(t != ")") {
             throw "parenthesis for function is not closed"
           }
-          return ["func", to, args]
+          return furtherOperation(["func", to, args], tokens)
         }
       } else if(ops[c]) {
         // operator
