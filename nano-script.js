@@ -1,7 +1,5 @@
 /**
- * Nano language: support the following features
- *
- *
+ * Nano language: supports the following features
  *  a=10
  *  a="abc do"
  *  a=a+b*2-6
@@ -27,6 +25,7 @@
 
 function NanoContext() {
   this.variables = {};
+  this.functions = [];
 
   function str2set(s) {
      return s.split("").reduce(function(a,b) {a[b]=1; return a;}, {})
@@ -123,6 +122,7 @@ function NanoContext() {
         if(tokens[0] == ";") {
           tokens.shift()
         }
+
       }
       if(tokens.length == 0 || tokens.shift() != "}") {
         throw "function definition is not closed properly"
@@ -254,7 +254,13 @@ function NanoContext() {
     // array
     var op = expression[0]
 
-    if(op == '=') {
+    if(op == "=>") {
+      name = expression[1]
+      if(this[name] || this.functions[name]) {
+        throw "function already defined: " + name
+      }
+      this.functions[name] = expression
+    } else if(op == '=') {
       var n = expression[1];
       var v = this.interpret(expression[2]);
       if(typeof n == 'string') {
@@ -304,13 +310,36 @@ function NanoContext() {
       }
       return arr
     } else if(op == 'func') {
-      if(this[name=expression[1]] == 'undefined') {
-        throw "undefined function: " + name
-      }
+      name = expression[1]
       args = expression[2]
       values = []
       for(var i=0;i<args.length;i++) {
         values.push(this.interpret(args[i]))
+      }
+      if(def=this.functions[name]) {
+        params = def[2]
+        if(params.length > args.length) {
+          throw "expected " + params.length + " parameters to function " + name + ", received " + args.length;
+        }
+
+        var childContext = new NanoContext();
+        for(var i=0;i<args.length;i++) {
+          childContext.variables[params[i]] = values[i];
+        }
+        for(var fname in this.functions) {
+          childContext.functions[fname] = this.functions[fname];
+        }
+        for(var k in this) {
+          if(k != 'variables' && k != 'functions') {
+            childContext[k] = this[k]
+          }
+        }
+        return statements.reduce(function(r, exp) {
+          return childContext.interpret(exp)
+        }, null);
+      }
+      if(this[name] == 'undefined') {
+        throw "undefined function: " + name
       }
       return this[name].apply(null, values)
     } else {
@@ -348,6 +377,14 @@ function NanoContext() {
       if(ts[i] == ';') {
         if(i > start) {
           var tokens = ts.slice(start, i);
+          if(tokens.indexOf("=>") >= 0) {
+            while(ts[i] != '}') {
+              if(i++ >= ts.length) {
+                throw "failed to find closing of function definition '}'"
+              }
+            }
+            tokens = ts.slice(start, ++i);
+          }
           var expression = this.expression(tokens);
           this.interpret(expression);
         }

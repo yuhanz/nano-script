@@ -147,6 +147,11 @@ describe('Nano.expression', function() {
       assert.deepEqual(exp, ["=>", "sum", ["a", "b"], [["+", "a", "b"]]])
     });
 
+    // it('should parse function definition', function() {
+    //   exp =  new NanoContext().expression([ 'f',  '(',  'x',  ',',  'y',  ')',  '=>',  '{',  'x',  '+',  'y',  ';',  '}',  ';',  'a',  '=',  '3',  ';',  'b',  '=',  '2',  ';',  'x',  '=',  'f',  '(',  '3',  ',',  '2',  ')',  ';' ])
+    //   assert.deepEqual(exp, ["=>", "f", ["x", "y"], [["+", "x", "y"]]])
+    // });
+
 });
 
 describe('Nano.interpret', function() {
@@ -314,4 +319,14 @@ describe('Nano.run', function() {
       assert.equal(context.variables['a'], 36)
       assert.equal(context.variables['b'], 6)
     });
+
+    it('should invoke self-defined function', function() {
+      var context = new NanoContext()
+      code = "f(x,y) => { x + y; }\na = 3; b = 2; x = f(3, 2);";
+      context.run(code);
+      assert.equal(context.variables['a'], 3)
+      assert.equal(context.variables['b'], 2)
+      assert.equal(context.variables['x'], 5)
+    });
+
 });
