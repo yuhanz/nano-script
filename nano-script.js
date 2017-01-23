@@ -11,9 +11,9 @@
  *  a>b
  *  a[b] = 10
  *  x = a[b]
+ * f(a,b)=>{ a=a+b; b+1 }
  * TODO:
  *  arr.length
- *  f(a,b)=>{ a=a+b; b+1 }
  *  map(f,a)
  *  reduce(f,0,[a,b])
  *  flatten(a)
@@ -36,7 +36,7 @@ function NanoContext() {
   var brs = str2set("[](){},")
   var des = str2set("\n;")
   var qus = str2set("\"'")
-  var end = str2set("];,)")
+  var end = str2set("];,)}")
 
   var precedents = [
     "&&", "||",

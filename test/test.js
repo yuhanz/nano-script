@@ -53,6 +53,10 @@ describe('Nano.expression', function() {
 
       exp = new NanoContext().expression(["a", "=", '"hello"'])
       assert.deepEqual(exp, ["=", "a", "\"hello\""])
+
+      exp = new NanoContext().expression(["2", "*", 'a'])
+      assert.deepEqual(exp, ["*", "2", "a"])
+
     });
 
     it('should parse expressions with precedent', function() {
@@ -328,5 +332,15 @@ describe('Nano.run', function() {
       assert.equal(context.variables['b'], 2)
       assert.equal(context.variables['x'], 5)
     });
+
+    it('should invoke self-defined function', function() {
+      var context = new NanoContext()
+      code = "f(x,y) => { a = x + y; 2 * a }\na = 3; b = 2; x = f(3, 2);";
+      context.run(code);
+      assert.equal(context.variables['a'], 3)
+      assert.equal(context.variables['b'], 2)
+      assert.equal(context.variables['x'], 10)
+    });
+
 
 });
