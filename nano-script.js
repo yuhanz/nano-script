@@ -25,7 +25,7 @@
 
 function NanoContext() {
   this.variables = {};
-  this.functions = [];
+  this.functions = {};
 
   function str2set(s) {
      return s.split("").reduce(function(a,b) {a[b]=1; return a;}, {})
@@ -223,6 +223,26 @@ function NanoContext() {
 
   this.expression = expression;
 
+  this.createChildContext = function(params, values) {
+    var childContext = new NanoContext();
+    for(var i=0;i<args.length;i++) {
+      childContext.variables[params[i]] = values[i];
+    }
+    for(var fname in this.functions) {
+      childContext.functions[fname] = this.functions[fname];
+    }
+    for(var k in this) {
+      if(k != 'variables' && k != 'functions') {
+        childContext[k] = this[k]
+      }
+    }
+    return childContext;
+  }
+
+  this.createFunctionPointer = function( numParams) {
+
+  }
+
   this.interpret = function(expression) {
     if(typeof expression == 'string') {
       v = expression;
@@ -243,6 +263,11 @@ function NanoContext() {
         return null;
       }
 
+      // js function
+      value = this[v];
+      if(value instanceof Function) {
+        return value;
+      }
       // variable
       value = this.variables[v];
       if(value == 'undefined') {
@@ -322,18 +347,7 @@ function NanoContext() {
           throw "expected " + params.length + " parameters to function " + name + ", received " + args.length;
         }
 
-        var childContext = new NanoContext();
-        for(var i=0;i<args.length;i++) {
-          childContext.variables[params[i]] = values[i];
-        }
-        for(var fname in this.functions) {
-          childContext.functions[fname] = this.functions[fname];
-        }
-        for(var k in this) {
-          if(k != 'variables' && k != 'functions') {
-            childContext[k] = this[k]
-          }
-        }
+        var childContext = this.createChildContext(params, values);
         return statements.reduce(function(r, exp) {
           return childContext.interpret(exp)
         }, null);
@@ -341,6 +355,7 @@ function NanoContext() {
       if(this[name] == 'undefined') {
         throw "undefined function: " + name
       }
+
       return this[name].apply(null, values)
     } else {
       var l = this.interpret(expression[1]);

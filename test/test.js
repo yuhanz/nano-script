@@ -315,9 +315,7 @@ describe('Nano.run', function() {
 
     it('should invoke javascript function', function() {
       var context = new NanoContext()
-      context.sqrt = function(v) {
-        return Math.sqrt(v)
-      }
+      context.sqrt = Math.sqrt;
       code = "a = 36; b = sqrt(a)";
       context.run(code);
       assert.equal(context.variables['a'], 36)
@@ -342,5 +340,27 @@ describe('Nano.run', function() {
       assert.equal(context.variables['x'], 10)
     });
 
+    it('should do lambda with js functions', function() {
+      var context = new NanoContext()
+      context.map = function(f, arr) {
+        return arr.map(f);
+      }
+      context.sqrt = Math.sqrt;
+
+      code = "b = [4,9]; a = map(sqrt, b);";
+      context.run(code);
+      assert.deepEqual(context.variables['a'], [2,3]);
+    });
+
+
+    // it('should do lambda on user-defined function', function() {
+    //   var context = new NanoContext()
+    //   context.map = function(f, arr) {
+    //     return arr.map(f);
+    //   }
+    //   code = "f(x) => { x * 2; }\na = map(f, [1,2]);";
+    //   context.run(code);
+    //   assert.equal(context.variables['a'], [2,4]);
+    // });
 
 });
