@@ -12,11 +12,11 @@
  *  a[b] = 10
  *  x = a[b]
  * f(a,b)=>{ a=a+b; b+1 }
- * TODO:
- *  arr.length
  *  map(f,a)
  *  reduce(f,0,[a,b])
  *  flatten(a)
+ * TODO:
+ *  arr.length
  *
  * Author: Yuhan Zhang
  * Email:  yuhanz@gmail.com
