@@ -25,7 +25,6 @@
 
 function NanoContext() {
   this.variables = {};
-  this.functions = {};
 
   function str2set(s) {
      return s.split("").reduce(function(a,b) {a[b]=1; return a;}, {})
@@ -230,12 +229,9 @@ function NanoContext() {
         childContext.variables[params[i]] = values[i];
       }
     }
-    for(var fname in this.functions) {
-      childContext.functions[fname] = this.functions[fname];
-    }
-    for(var k in this) {
-      if(k != 'variables' && k != 'functions') {
-        childContext[k] = this[k]
+    for(var i=0;i<this.variables.length;i++) {
+      if(v=this.variables[i] instanceof Function) {
+        childContext.variables[k] = v
       }
     }
     return childContext;
@@ -279,15 +275,9 @@ function NanoContext() {
         return value;
       }
 
-      // user-defined function
-      value = this.functions[v];
-      if(value) {
-        return this.createFunctionPointer(value[2], value[3]);
-      }
-
       // variable
       value = this.variables[v];
-      if(value == 'undefined') {
+      if(value == undefined) {
         throw "undefined variable: " + v;
       }
       return value;
@@ -298,10 +288,10 @@ function NanoContext() {
 
     if(op == "=>") {
       name = expression[1]
-      if(this[name] || this.functions[name]) {
-        throw "function already defined: " + name
+      if(this[name] || this.variables[name]) {
+        throw "function / variable already defined: " + name
       }
-      this.functions[name] = expression
+      this.variables[name] = this.createFunctionPointer(expression[2], expression[3])
     } else if(op == '=') {
       var n = expression[1];
       var v = this.interpret(expression[2]);
@@ -314,7 +304,7 @@ function NanoContext() {
         var name = n[1];
         var index = this.interpret(n[2])
         var t = this.variables[name]
-        if(!t) {
+        if(t == undefined) {
           throw "undefined variable name: " + name
         }
         if(typeof t != 'object') {
@@ -358,22 +348,15 @@ function NanoContext() {
       for(var i=0;i<args.length;i++) {
         values.push(this.interpret(args[i]))
       }
-      if(def=this.functions[name]) {
-        params = def[2]
-        if(params.length > args.length) {
-          throw "expected " + params.length + " parameters to function " + name + ", received " + args.length;
-        }
-
-        var childContext = this.createChildContext(params, values);
-        return statements.reduce(function(r, exp) {
-          return childContext.interpret(exp)
-        }, null);
+      fn = this.variables[name]
+      if(fn == undefined) {
+        "function " + fn + " is undefined"
       }
-      if(this[name] == 'undefined') {
-        throw "undefined function: " + name
+      if(!(fn instanceof Function)) {
+        throw name + " is not a function"
       }
 
-      return this[name].apply(null, values)
+      return fn.apply(null, values)
     } else {
       var l = this.interpret(expression[1]);
       var r = this.interpret(expression[2]);
