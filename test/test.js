@@ -353,14 +353,15 @@ describe('Nano.run', function() {
     });
 
 
-    // it('should do lambda on user-defined function', function() {
-    //   var context = new NanoContext()
-    //   context.map = function(f, arr) {
-    //     return arr.map(f);
-    //   }
-    //   code = "f(x) => { x * 2; }\na = map(f, [1,2]);";
-    //   context.run(code);
-    //   assert.equal(context.variables['a'], [2,4]);
-    // });
+    it('should do lambda on user-defined function', function() {
+      var context = new NanoContext()
+      context.map = function(f, arr) {
+        return arr.map(f);
+      }
+      //code = "f(x) => { x * 2; }\na = map(f, [1,2]);";
+      code = "f(x) => { x * 2; }\nb = [1,2]; a = map(f, b);";
+      context.run(code);
+      assert.deepEqual(context.variables['a'], [2,4]);
+    });
 
 });

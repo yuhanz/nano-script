@@ -225,8 +225,10 @@ function NanoContext() {
 
   this.createChildContext = function(params, values) {
     var childContext = new NanoContext();
-    for(var i=0;i<args.length;i++) {
-      childContext.variables[params[i]] = values[i];
+    if(values) {
+      for(var i=0;i<params.length;i++) {
+        childContext.variables[params[i]] = values[i];
+      }
     }
     for(var fname in this.functions) {
       childContext.functions[fname] = this.functions[fname];
@@ -239,8 +241,16 @@ function NanoContext() {
     return childContext;
   }
 
-  this.createFunctionPointer = function( numParams) {
-
+  this.createFunctionPointer = function(params, statements) {
+    var childContext = this.createChildContext(params);
+    return function() {
+      for(var i=0;i<params.length;i++) {
+        childContext.variables[params[i]] = arguments[i];
+      }
+      return statements.reduce(function(r, exp) {
+        return childContext.interpret(exp)
+      }, null);
+    }
   }
 
   this.interpret = function(expression) {
@@ -268,6 +278,13 @@ function NanoContext() {
       if(value instanceof Function) {
         return value;
       }
+
+      // user-defined function
+      value = this.functions[v];
+      if(value) {
+        return this.createFunctionPointer(value[2], value[3]);
+      }
+
       // variable
       value = this.variables[v];
       if(value == 'undefined') {
