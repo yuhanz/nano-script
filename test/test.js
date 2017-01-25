@@ -322,6 +322,17 @@ describe('Nano.run', function() {
       assert.equal(context.variables['b'], 6)
     });
 
+    it('should invoke javascript function with array input', function() {
+      var context = new NanoContext()
+      context.variables['sort'] = function(arr) {
+        return arr.sort();
+      };
+      code = "b = sort([2,3,1])";
+      context.run(code);
+      assert.deepEqual(context.variables['b'], [1,2,3])
+    });
+
+
     it('should invoke self-defined function', function() {
       var context = new NanoContext()
       code = "f(x,y) => { x + y; }\na = 3; b = 2; x = f(3, 2);";
@@ -351,7 +362,6 @@ describe('Nano.run', function() {
       context.run(code);
       assert.deepEqual(context.variables['a'], [2,3]);
     });
-
 
     it('should do lambda on user-defined function', function() {
       var context = new NanoContext()

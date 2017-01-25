@@ -104,7 +104,7 @@ function NanoContext() {
   }
 
   function furtherOperation(exp, tokens) {
-    if(tokens.length == 0 || ';' == (to2 = tokens[0])) {
+    if(tokens.length == 0 || ';' == (to2 = tokens[0]) || ')' == to2) {
       return exp
     }
     if(to2 == "=>") {
@@ -167,7 +167,7 @@ function NanoContext() {
             throw "brackets are not balanced"
           }
           exp = ["[]", to, exp]
-          if(!tokens.length) {
+          if(!tokens.length || (t2=tokens[0][0]) == ',' || t2 == ')') {
             return exp
           }
           if(ops[tokens[0][0]]) {
@@ -182,6 +182,7 @@ function NanoContext() {
             args.push(expression(tokens))
             var t = tokens.shift()
           } while(t == ",");
+
           if(t != ")") {
             throw "parenthesis for function is not closed"
           }
