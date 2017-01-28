@@ -15,6 +15,7 @@
  *  map(f,a)
  *  reduce(f,0,[a,b])
  *  flatten(a)
+ * # This is a comment
  * TODO:
  *  arr.length
  *
@@ -31,7 +32,7 @@ function NanoContext() {
   }
 
   var syms = str2set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$.")
-  var ops = str2set("+-*/%=><&|:!?~^")
+  var ops = str2set("#+-*/%=><&|:!?~^")
   var brs = str2set("[](){},")
   var des = str2set("\n;")
   var qus = str2set("\"'")
@@ -191,6 +192,12 @@ function NanoContext() {
       } else if(ops[c]) {
         // operator
         tokens.shift()
+        if(c == '#') {
+          do {
+            var t = tokens.shift();
+          } while( t != ";" && t);
+          return null;
+        }
         var exp = expression(tokens)
         return [to, exp]
       } else if(c == "(") {
@@ -354,6 +361,7 @@ function NanoContext() {
         "function " + fn + " is undefined"
       }
       if(!(fn instanceof Function)) {
+        console.log(name)
         throw name + " is not a function"
       }
 
