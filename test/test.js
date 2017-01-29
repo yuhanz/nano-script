@@ -57,6 +57,8 @@ describe('Nano.expression', function() {
       exp = new NanoContext().expression(["2", "*", 'a'])
       assert.deepEqual(exp, ["*", "2", "a"])
 
+      exp = new NanoContext().expression(["-", "1", "+", "2"])
+      assert.deepEqual(exp, ["+", ["-", "1"], "2"])
     });
 
     it('should parse expressions with precedent', function() {
@@ -97,7 +99,9 @@ describe('Nano.expression', function() {
     it('should parse ternary expression', function() {
       exp = new NanoContext().expression(["c", "?", "0", ":", "1"])
       assert.deepEqual(exp, ["?", "c", [":", "0", "1"]])
+    });
 
+    it('should parse ternary expression in chain', function() {
       exp = new NanoContext().expression(["c", ">", "0", "&&", "b", ">=", "3", "?", "0", ":", "1", "+", "2"])
       assert.deepEqual(exp, ["?", ["&&", [">", "c", "0"], [">=", "b", "3"]], [":", "0", ["+", "1", "2"]]])
     });
@@ -145,7 +149,7 @@ describe('Nano.expression', function() {
     });
 
     it('should parse function in expression at tail ', function() {
-      exp = new NanoContext().expression(["+", "1", "f", "(", "a", ",", "b", ")"])
+      exp = new NanoContext().expression(["1", "+", "f", "(", "a", ",", "b", ")"])
       assert.deepEqual(exp, ["+", "1", ["func", "f", ["a", "b"]]])
     });
 
@@ -155,8 +159,8 @@ describe('Nano.expression', function() {
     });
 
     it('should parse ternary expression chain', function() {
-      exp =  new NanoContext().expression(["c", "?", "0", ":", "y", "?", "1", ":", "-1"])
-      assert.deepEqual(exp, ["?", "c", [":", "0", ["?", "y", [":", "-1"]]]])
+      exp =  new NanoContext().expression(["c", "?", "0", ":", "y", "?", "1", ":", "2"])
+      assert.deepEqual(exp, ["?", "c", [":", "0", ["?", "y", [":", "1", "2"]]]])
     });
 
     it('should parse function definition', function() {
@@ -374,7 +378,7 @@ describe('Nano.run', function() {
       assert.equal(context.variables['x'], 5)
     });
 
-    it('should invoke self-defined function', function() {
+    it('should invoke self-defined function in expression', function() {
       var context = new NanoContext()
       code = "f(x,y) => { x + y; }\na = 3; b = 2; x = f(3, 2); y = f(1,1) + f(2,2);";
       context.run(code);
@@ -416,10 +420,11 @@ describe('Nano.run', function() {
       assert.deepEqual(context.variables['a'], [2,4]);
     });
 
-    it('should do recursive function', function() {
+    it('should do recursive calls', function() {
       var context = new NanoContext()
       code = "f(x) => { x <=1 ? 1 : f(x-1) + f(x-2); }\n v2 = f(2); v3 = f(3); v4 = f(4); v5 = f(5);"
       context.run(code);
+      console.log(context.variables)
       assert.equal(context.variables['v2'], 2);
       assert.equal(context.variables['v3'], 3);
       assert.equal(context.variables['v4'], 5);

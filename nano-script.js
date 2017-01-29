@@ -43,7 +43,7 @@ function NanoContext() {
     ">=", "<=", ">", "<", "==",
     "+", "-",
     "*", "/",
-    "()"]
+    "()", "func"]
 
     function tokenize(str) {
       tokens = [];
@@ -150,6 +150,7 @@ function NanoContext() {
   function expression(tokens) {
       var to = tokens[0]
       var c = to[0]
+      console.log("token: " + to)
       if(syms[c] || qus[c]) {
         tokens.shift()
         var to2 = tokens[0]
@@ -237,17 +238,21 @@ function NanoContext() {
         childContext.variables[params[i]] = values[i];
       }
     }
+    console.log("createChildContext")
+    console.log("this.variables")
+    console.log(this.variables)
     for(var i=0;i<this.variables.length;i++) {
       if(v=this.variables[i] instanceof Function) {
+        console.log("copy function")
         childContext.variables[k] = v
       }
     }
     return childContext;
   }
 
-  this.createFunctionPointer = function(params, statements) {
+  this.createFunctionPointer = function(params, statements, name) {
     var childContext = this.createChildContext(params);
-    return function() {
+    return childContext.variables[name] = function() {
       for(var i=0;i<params.length;i++) {
         childContext.variables[params[i]] = arguments[i];
       }
@@ -299,7 +304,9 @@ function NanoContext() {
       if(this[name] || this.variables[name]) {
         throw "function / variable already defined: " + name
       }
-      this.variables[name] = this.createFunctionPointer(expression[2], expression[3])
+      console.log("define function: " + name)
+      this.variables[name] = this.createFunctionPointer(expression[2], expression[3], name)
+      console.log("define function completed: " + name)
     } else if(op == '=') {
       var n = expression[1];
       var v = this.interpret(expression[2]);
@@ -361,13 +368,23 @@ function NanoContext() {
         "function " + fn + " is undefined"
       }
       if(!(fn instanceof Function)) {
-        console.log(name)
+        console.log("--- variables")
+        console.log(this.variables)
         throw name + " is not a function"
       }
 
       return fn.apply(null, values)
     } else {
       var l = this.interpret(expression[1]);
+      if(expression[2] == undefined) {
+        if(op == '+') {
+          return l
+        } else if(op == '-') {
+          return -l
+        } else {
+          throw "missing right-hand side operand with operator: " + op
+        }
+      }
       var r = this.interpret(expression[2]);
       return op == '+' ? l + r :
              op == '-' ? l - r :
