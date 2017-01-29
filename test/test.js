@@ -57,8 +57,8 @@ describe('Nano.expression', function() {
       exp = new NanoContext().expression(["2", "*", 'a'])
       assert.deepEqual(exp, ["*", "2", "a"])
 
-      exp = new NanoContext().expression(["-", "1", "+", "2"])
-      assert.deepEqual(exp, ["+", ["-", "1"], "2"])
+      // exp = new NanoContext().expression(["-", "1", "+", "2"])
+      // assert.deepEqual(exp, ["+", ["-", "1"], "2"])
     });
 
     it('should parse expressions with precedent', function() {
@@ -233,6 +233,15 @@ describe('Nano.interpret', function() {
         assert.equal(context.variables['b'], false);
     });
 
+    it('should interpret negative / positive signs', function() {
+      var context = new NanoContext();
+      context.interpret([ '=', 'a', [ '+', '5', ['-', '2']]]);
+      assert.equal(context.variables['a'], 3);
+
+      context.interpret([ '=', 'a', [ '-', ['-', '5'], ['+', '2']]]);
+      assert.equal(context.variables['a'], -7);
+    });
+
     it('should interpret ternary operator', function() {
       var context = new NanoContext();
       context.interpret(['=', 'c', 'true'])
@@ -256,6 +265,14 @@ describe('Nano.run', function() {
       assert.equal(context.variables['b'], 2)
       assert.equal(context.variables['c'], 7)
     });
+
+    // it('should run code with positive / negative signs', function() {
+    //   var context = new NanoContext()
+    //   code = "a = -1 + 3 ";
+    //   context.run(code);
+    //   assert.equal(context.variables['a'], 2)
+    // });
+
 
     it('should initialize array', function() {
       var context = new NanoContext()
@@ -424,7 +441,6 @@ describe('Nano.run', function() {
       var context = new NanoContext()
       code = "f(x) => { x <=1 ? 1 : f(x-1) + f(x-2); }\n v2 = f(2); v3 = f(3); v4 = f(4); v5 = f(5);"
       context.run(code);
-      console.log(context.variables)
       assert.equal(context.variables['v2'], 2);
       assert.equal(context.variables['v3'], 3);
       assert.equal(context.variables['v4'], 5);
