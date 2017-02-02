@@ -57,8 +57,9 @@ describe('Nano.expression', function() {
       exp = new NanoContext().expression(["2", "*", 'a'])
       assert.deepEqual(exp, ["*", "2", "a"])
 
-      // exp = new NanoContext().expression(["-", "1", "+", "2"])
-      // assert.deepEqual(exp, ["+", ["-", "1"], "2"])
+
+      exp = new NanoContext().expression(["-", "1", "+", "2"])
+      assert.deepEqual(exp, ["+", ["-", "1"], "2"])
     });
 
     it('should parse expressions with precedent', function() {
@@ -73,6 +74,9 @@ describe('Nano.expression', function() {
 
       exp = new NanoContext().expression(["(", "a", "+", "b", ")", "*", "2"])
       assert.deepEqual(exp, [ '*',['()', ['+', 'a', 'b']], '2'])
+
+      exp = new NanoContext().expression(["a", "=", "-", "1", "*", "10", "+", "2"])
+      assert.deepEqual(exp, [ '=', 'a', ["+", [ '-', ["*", "1", "10"]], "2" ]]);
 
     });
 
@@ -266,12 +270,21 @@ describe('Nano.run', function() {
       assert.equal(context.variables['c'], 7)
     });
 
-    // it('should run code with positive / negative signs', function() {
-    //   var context = new NanoContext()
-    //   code = "a = -1 + 3 ";
-    //   context.run(code);
-    //   assert.equal(context.variables['a'], 2)
-    // });
+    it('should run code with positive / negative signs', function() {
+      var context = new NanoContext()
+      code = "a = -1 + 3 ";
+      context.run(code);
+      assert.equal(context.variables['a'], 2)
+
+      code = "b = + 1 - 3 ";
+      context.run(code);
+      assert.equal(context.variables['b'], -2)
+
+      code = "x = -(a*b)";
+      context.run(code);
+      assert.equal(context.variables['x'], 4)
+
+    });
 
 
     it('should initialize array', function() {

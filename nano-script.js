@@ -95,6 +95,7 @@ function NanoContext() {
   this.tokenize = tokenize;
 
   function chain(op, token, exp) {
+    exp = fixExpressionForSign(exp)
     if(Array.isArray(exp)) {
       var nop = exp[0]
       if(precedents.indexOf(op) > precedents.indexOf(nop)) {
@@ -228,7 +229,23 @@ function NanoContext() {
       }
   }
 
-  this.expression = expression;
+  function fixExpressionForSign(expression) {
+    if(!expression) {
+      return expression
+    }
+    op = expression[0]
+    if(op == '-' && expression[2] == undefined && Array.isArray(expression[1])) {
+      expression = expression[1]
+      expression[1] = [op, expression[1]]
+    }
+
+    return expression;
+  }
+
+  this.expression = function(tokens) {
+    exp = expression(tokens);
+    return fixExpressionForSign(exp);
+  }
 
   this.createChildContext = function(params, values) {
     var childContext = new NanoContext();
