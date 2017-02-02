@@ -284,6 +284,11 @@ describe('Nano.run', function() {
       context.run(code);
       assert.equal(context.variables['x'], 4)
 
+      code = "y = -(1 + 2)";
+      context.run(code);
+      assert.equal(context.variables['y'], -3)
+
+
     });
 
 
