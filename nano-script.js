@@ -444,4 +444,21 @@ function NanoContext() {
     }
 
   }
+
+  this.markup = function(input) {
+    // variable replacement
+    replacePattern = /({{[^}]*}})/
+    parts = input.split(replacePattern)
+    var variables = this.variables
+    text = parts.map(function(p) {
+      if(p.match(replacePattern)) {
+        var name = p.substring(2, p.length - 2);
+        return variables[name];
+      } else {
+        return p
+      }
+    }).join('')
+    return text
+
+  }
 }
