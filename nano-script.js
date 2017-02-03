@@ -45,6 +45,8 @@ function NanoContext() {
     "*", "/",
     "()", "func"]
 
+  replacePattern = /({{[^}]*}})/
+
     function tokenize(str) {
       tokens = [];
       var s;
@@ -447,7 +449,6 @@ function NanoContext() {
 
   this.markup = function(input) {
     // variable replacement
-    replacePattern = /({{[^}]*}})/
     parts = input.split(replacePattern)
     var variables = this.variables
     text = parts.map(function(p) {
