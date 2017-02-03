@@ -465,6 +465,15 @@ describe('Nano.run', function() {
       assert.equal(context.variables['v5'], 8);
     });
 
+    it('should return the value from the last statement', function() {
+      var context = new NanoContext()
+      code = "a = 10; 100 > a"
+      var result = context.run(code);
+      assert.equal(context.variables['a'], 10);
+      assert.equal(result, true);
+    });
+
+
 });
 
 describe('Nano.markup', function() {

@@ -421,6 +421,7 @@ function NanoContext() {
   }
 
   this.run = function(text) {
+    var result = undefined
     ts = this.tokenize(text)
     if(ts[ts.length-1] != ';') {
       ts.push(";");
@@ -439,12 +440,12 @@ function NanoContext() {
             tokens = ts.slice(start, ++i);
           }
           var expression = this.expression(tokens);
-          this.interpret(expression);
+          result = this.interpret(expression);
         }
         start = i + 1;
       }
     }
-
+    return result
   }
 
   this.markup = function(input) {
