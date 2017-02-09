@@ -318,7 +318,7 @@ function NanoContext() {
     if(op == "=>") {
       name = expression[1]
       if(this[name] || this.variables[name]) {
-        throw "function / variable already defined: " + name
+        console.log("overwriting existing function / variable already defined: " + name)
       }
       this.variables[name] = this.createFunctionPointer(expression[2], expression[3], name)
     } else if(op == '=') {
