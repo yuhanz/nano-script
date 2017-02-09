@@ -27,7 +27,7 @@ Enter nano script in the input line below.
             try {
                 log += "" + context.run(code) + "\n"
             } catch(ex) {
-                log += ex + "\n"
+                log += "Error: " + ex + "\n"
             }
             log += JSON.stringify(context.variables) + "\n"
             $("#output").text(log)
