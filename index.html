@@ -24,7 +24,11 @@ Enter nano script in the input line below.
             $("#input").val("")
 
             log += code + "\n"
-            context.run(code)
+            try {
+                log += "" + context.run(code) + "\n"
+            } catch(ex) {
+                log += ex + "\n"
+            }
             log += JSON.stringify(context.variables) + "\n"
             $("#output").text(log)
         }
