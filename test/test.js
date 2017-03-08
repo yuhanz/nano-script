@@ -403,6 +403,13 @@ describe('Nano.run', function() {
       assert.deepEqual(context.variables['b'], [1,2,3])
     });
 
+    it('should invoke javascript function without argument', function() {
+      var context = new NanoContext()
+      context.variables['random'] = Math.random;
+      code = "a = 36; b = random()";
+      context.run(code);
+      assert.equal(context.variables['b'] >0 && context.variables['b'] < 1, true)
+    });
 
     it('should invoke self-defined function', function() {
       var context = new NanoContext()

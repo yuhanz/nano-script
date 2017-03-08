@@ -182,10 +182,12 @@ function NanoContext() {
           tokens.shift()
           // function
           var args = []
-          do {
-            args.push(expression(tokens))
-            var t = tokens.shift()
-          } while(t == ",");
+          if((t=tokens[0])!= ")") {
+            do {
+              args.push(expression(tokens))
+              var t = tokens.shift()
+            } while(t == ",");
+          }
 
           if(t != ")") {
             throw "parenthesis for function is not closed"
