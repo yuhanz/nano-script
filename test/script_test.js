@@ -228,5 +228,16 @@ describe('Nano.run', function() {
       assert.equal(result, true);
     });
 
+    it('should arithmetic correctly', function() {
+      var context = new NanoContext()
+      context.variables['c1'] = {'a':10, 'b': 3}
+      context.variables['c2'] = {'a':5, 'b': 2}
+       code = "c1['a'] / c2['a'] * 2 * c1['b'] / (c1['b'] + c2['b'])"
+      // code = "c1['a']"
+      //  code = "attackRate(c1, c2) => { c1['ar'] / c2['dr'] * 2 * c1['level'] / (c1['level'] + c2['level']); }"
+      var result = context.run(code);
+      assert.equal(result, 2.4);
+    });
+
 
 });

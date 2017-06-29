@@ -38,12 +38,23 @@ function NanoContext() {
   var qus = str2set("\"'")
   var end = str2set("];,)}")
 
-  var precedents = [
-    "&&", "||",
-    ">=", "<=", ">", "<", "==",
-    "+", "-",
-    "*", "/",
-    "()", "func"]
+  var precedents = {
+    ":" : 0,
+    "?" : 0,
+    "||" : 1,
+    "&&" : 2,
+    ">=" : 3,
+    "<=" : 3,
+    ">" : 3,
+    "<" : 3,
+    "==" : 3,
+    "+" : 4,
+    "-" : 4,
+    "*" : 5,
+    "/" : 5,
+    "()" : 12,
+    "func" : 13
+  }
 
   replacePattern = /({{[^}]*}})/
 
@@ -100,7 +111,7 @@ function NanoContext() {
     exp = fixExpressionForSign(exp)
     if(Array.isArray(exp)) {
       var nop = exp[0]
-      if(precedents.indexOf(op) > precedents.indexOf(nop)) {
+      if(precedents[op] > precedents[nop]) {
         return [nop, chain(op, token, exp[1]), exp[2]]
       }
     }
