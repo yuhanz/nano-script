@@ -26,7 +26,7 @@ describe('Nano.expression', function() {
       assert.deepEqual(exp, ["!", ["!", "a"]])
 
       exp = new NanoContext().expression(["a", "=", "b", "+", "10", "-", "x"])
-      assert.deepEqual(exp, [ '=', 'a', [ '+', 'b', [ '-', '10', 'x' ]]])
+      assert.deepEqual(exp, [ '=', 'a', [ '-', [ '+', 'b', '10'], 'x']])
 
       exp = new NanoContext().expression(["a", "=", '"hello"'])
       assert.deepEqual(exp, ["=", "a", "\"hello\""])
@@ -44,7 +44,7 @@ describe('Nano.expression', function() {
       assert.deepEqual(exp, [ '=', 'a', [ '-', ['*', 'b', '10'], 'x' ]])
 
       exp = new NanoContext().expression(["a", "=", "c", "+", "b", "*", "10", "-", "x"])
-      assert.deepEqual(exp, [ '=', 'a', ['+', 'c', [ '-', ['*', 'b', '10'], 'x' ]]])
+      assert.deepEqual(exp, [ '=', 'a', ['-', [ '+', 'c', ['*', 'b', '10']], 'x']])
 
       exp = new NanoContext().expression(["a", "=", "c", "+", "b", ">=", "10", "&&", "x"])
       assert.deepEqual(exp, [ '=', 'a', ['&&', ['>=', ['+', 'c', 'b'], '10'], 'x' ]])
@@ -55,7 +55,20 @@ describe('Nano.expression', function() {
       exp = new NanoContext().expression(["a", "=", "-", "1", "*", "10", "+", "2"])
       assert.deepEqual(exp, [ '=', 'a', ["+", [ '-', ["*", "1", "10"]], "2" ]]);
 
+      exp = new NanoContext().expression(["10", "/", "5", "*", "2"])
+      assert.deepEqual(exp, [ '*', ["/", "10", "5"], "2"]);
+
+      exp = new NanoContext().expression(["10", "/", "5", "/", "2"])
+      assert.deepEqual(exp, [ '/', ["/", "10", "5"], "2"]);
+
+      exp = new NanoContext().expression(["10", "/", "c", "[", "1", "]", "/", "2"])
+      assert.deepEqual(exp, [ '/', ["/", "10", ["[]", "c", "1"]], "2"]);
+
+      exp = new NanoContext().expression(["c", "[", "2", "]", "/", "10", "/", "2"])
+      assert.deepEqual(exp, [ '/', ["/", ["[]", "c", "2"], "10"], "2"]);
+
     });
+
 
     it('should parse function', function() {
       exp = new NanoContext().expression(["f", "(", "a", ",", "b", ")"])

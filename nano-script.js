@@ -40,7 +40,7 @@ function NanoContext() {
 
   var precedents = {
     ":" : 0,
-    "?" : 0,
+    "?" : -1,
     "||" : 1,
     "&&" : 2,
     ">=" : 3,
@@ -51,7 +51,8 @@ function NanoContext() {
     "+" : 4,
     "-" : 4,
     "*" : 5,
-    "/" : 5,
+    "/" : 6,
+    "%" : 6,
     "()" : 12,
     "func" : 13
   }
@@ -111,11 +112,18 @@ function NanoContext() {
     exp = fixExpressionForSign(exp)
     if(Array.isArray(exp)) {
       var nop = exp[0]
-      if(precedents[op] > precedents[nop]) {
+      if(precedents[op] >= precedents[nop] && precedents[op] > 0) {
         return [nop, chain(op, token, exp[1]), exp[2]]
       }
     }
     return [op, token, exp]
+  }
+
+  function fixDivision(exp) {
+    if(!exp || exp[0] != '/' || !Array.isArray(exp[2])) {
+      return exp
+    }
+    return [exp[2][0], [exp[0], exp[1], exp[2][1]], exp[2][2]]
   }
 
   function furtherOperation(exp, tokens) {
@@ -162,6 +170,10 @@ function NanoContext() {
   // exp: exp ? exp : exp
   // exp: exp .s
   function expression(tokens) {
+    return fixDivision(_expression(tokens));
+  }
+
+  function _expression(tokens) {
       var to = tokens[0]
       var c = to[0]
       if(syms[c] || qus[c]) {
@@ -453,6 +465,7 @@ function NanoContext() {
             tokens = ts.slice(start, ++i);
           }
           var expression = this.expression(tokens);
+          //console.log(expression)
           result = this.interpret(expression);
         }
         start = i + 1;
