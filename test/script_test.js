@@ -241,5 +241,11 @@ describe('Nano.run', function() {
       assert.equal(result, 2.4);
     });
 
+    it('should skip comments', function() {
+      var context = new NanoContext()
+      code = "# --- start of MAIN"
+      var result = context.run(code);
+    });
+
 
 });

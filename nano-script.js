@@ -466,7 +466,9 @@ function NanoContext() {
           }
           var expression = this.expression(tokens);
           //console.log(expression)
-          result = this.interpret(expression);
+          if(expression) {
+            result = this.interpret(expression);
+          }
         }
         start = i + 1;
       }
